@@ -1,0 +1,15 @@
+# Google 的 Android SDK 组件，受其自身许可约束，不进本仓库（见 README）
+platform-tools/
+.tools/
+
+# 手机会话产生的本地文件
+_mobile_shots/
+*.png
+.hotpoints.json
+
+# 设备调试授权私钥，出现在工作区时必须排除
+adbkey
+adbkey.pub
+
+node_modules/
+*.log
