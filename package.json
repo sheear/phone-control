@@ -1,0 +1,22 @@
+{
+  "name": "phone-control",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Control an Android phone from Codex via ADB: a zero-dependency, host-agnostic engine plus a thin MCP adapter.",
+  "type": "module",
+  "main": "mcp-server.mjs",
+  "exports": {
+    ".": "./mcp-server.mjs",
+    "./lib/adb.js": "./lib/adb.js",
+    "./lib/uitree.js": "./lib/uitree.js",
+    "./lib/commands.js": "./lib/commands.js",
+    "./lib/paths.js": "./lib/paths.js"
+  },
+  "files": [
+    "mcp-server.mjs",
+    "lib"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}
