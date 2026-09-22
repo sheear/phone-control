@@ -411,4 +411,4 @@ rl.on('line', (line) => {
 
 rl.on('close', () => process.exit(0))
 
-process.stderr.write(`phone-control MCP 启动（adb: ${adbPath}）\n`)
+process.stderr.write(`phone-control MCP 已启动（adb: ${adbPath}）\n`)
