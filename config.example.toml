@@ -1,0 +1,73 @@
+# phone-control 配置模板
+#
+# 用法:按需改掉下面的路径,把 [mcp_servers.phone-control] 那段追加到
+# ~/.codex/config.toml(Windows: C:\Users\<你>\.codex\config.toml),然后重启 Codex 会话。
+#
+# 字段名依据 OpenAI 官方 Codex 配置参考(config-file / config-reference)里的 mcp_servers.* 定义。
+#
+# TOML 注意:双引号字符串里反斜杠是转义符,写 Windows 路径要用单引号(字面字符串,不转义),
+# 或者用正斜杠。下面统一用正斜杠,最不容易出错。
+
+# ---------------------------------------------------------------
+# 最小可用版
+# ---------------------------------------------------------------
+[mcp_servers.phone-control]
+command = "node"                                  # 或绝对路径,如 "C:/Program Files/nodejs/node.exe"
+args = ["C:/Users/you/.codex/skills/phone-control/mcp-server.mjs"]
+env = { DSH_MOBILE_ADB_PLUGIN = "C:/Users/you/skills/phone-control" }
+
+# ---------------------------------------------------------------
+# 完整版(带超时、工作目录与安全收紧)。用的时候把上面的最小版注释掉。
+# ---------------------------------------------------------------
+# [mcp_servers.phone-control]
+# command = "node"
+# args = ["C:/Users/you/skills/phone-control/mcp-server.mjs"]
+#
+# # 引擎位置:指向包含 lib/ 的那个目录(仓库根)。
+# # adb 位置:不填时按候选顺序找 引擎根/platform-tools → 引擎根/.tools → cwd/.tools → PATH。
+# env = { DSH_MOBILE_ADB_PLUGIN = "C:/Users/you/skills/phone-control",
+#         DSH_MOBILE_ADB = "C:/Users/you/platform-tools/adb.exe" }
+#
+# # 截图默认落在 <cwd>/_mobile_shots,所以把它设成你允许写盘的目录。
+# cwd = "C:/Users/you/phone-work"
+#
+# # UI dump 在长列表页会慢,默认 10 秒启动超时偏紧。
+# startup_timeout_sec = 20
+# tool_timeout_sec = 120
+#
+# enabled = true
+#
+# # 按需收紧:只暴露读操作与点击/滑动,不给 shell 和文件传输。
+# # enabled_tools = ["mobile_status", "mobile_ui", "mobile_screenshot",
+# #                  "mobile_tap", "mobile_swipe", "mobile_key", "mobile_app"]
+# #
+# # 或者反向:保留全部,只砍掉最危险的那一个。
+# # disabled_tools = ["mobile_shell"]
+
+# ---------------------------------------------------------------
+# 字段说明
+# ---------------------------------------------------------------
+# command / args       启动一个 stdio MCP server 的命令与参数。
+#
+# env                  传给该 MCP 进程的环境变量(map<string,string>)。本 Skill 只认两个:
+#                        DSH_MOBILE_ADB_PLUGIN —— 引擎根目录(含 lib/);不设则用仓库自身位置。
+#                        DSH_MOBILE_ADB        —— adb 可执行文件路径;不设则按候选顺序自动查找。
+#
+# cwd                  MCP 进程的工作目录,影响截图默认落盘位置(默认 <cwd>/_mobile_shots)。
+# startup_timeout_sec  覆盖默认 10 秒的启动超时。
+# tool_timeout_sec     覆盖默认 60 秒的单次工具超时。
+# enabled              设为 false 可临时停用而不删配置。
+# required             为 true 时,该 server 初始化失败会导致 Codex 启动/恢复失败。默认不开,建议保持默认。
+# enabled_tools        白名单;disabled_tools 黑名单(黑名单在名单之后生效)。
+
+# ---------------------------------------------------------------
+# 自检:确认 server 能独立跑起来并列出工具
+# ---------------------------------------------------------------
+# $env:DSH_MOBILE_ADB_PLUGIN = "C:/Users/you/skills/phone-control"
+# '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"probe","version":"1"}}}' |
+#   node "C:/Users/you/skills/phone-control/mcp-server.mjs"
+#
+# 正常应看到 serverInfo 与 12 个 mobile_* 工具(connect / status / ui / screenshot /
+# tap / swipe / type / key / app / shell / pull / push)。
+#
+# 若报「无法加载引擎库」,说明 DSH_MOBILE_ADB_PLUGIN 指向的目录里没有 lib/。
